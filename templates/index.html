@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CareDesk</title>
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+<section id="auth">
+  <div class="aside-l">
+    <h1>Keep your patients and their doctors in one place.</h1>
+    <p>Add patients, add doctors, and pair them up. Everything you enter stays tied to your account.</p>
+  </div>
+  <div class="aside-r"><div class="abox">
+    <h2 id="aTitle">Welcome back</h2>
+    <p class="sub" id="aSub">Sign in with your email to continue.</p>
+    <form id="authForm" novalidate>
+      <div id="nameWrap" class="hidden"><label for="aName">Full name</label><input id="aName" name="name" autocomplete="name"></div>
+      <label for="aEmail">Email</label><input id="aEmail" name="email" type="email" autocomplete="email">
+      <label for="aPass">Password</label>
+      <div class="pw"><input id="aPass" name="password" type="password"><button type="button" id="showPw">Show</button></div>
+      <div class="meter hidden" id="meter"><i></i></div><div class="meta hidden" id="meterTxt"></div>
+      <div class="gerr" id="aErr"></div>
+      <button class="btn block" id="aBtn">Sign in</button>
+    </form>
+    <p class="switch" id="aSwitch"></p>
+  </div></div>
+</section>
+
+<div id="app" class="hidden">
+  <nav class="side">
+    <div class="brand">CareDesk</div>
+    <button class="nav on" data-tab="overview">Overview</button>
+    <button class="nav" data-tab="patients">Patients <span id="cP">0</span></button>
+    <button class="nav" data-tab="doctors">Doctors <span id="cD">0</span></button>
+    <button class="nav" data-tab="mappings">Assignments <span id="cM">0</span></button>
+    <div class="me"><strong id="meName"></strong><span id="meMail"></span><br>
+      <button id="themeBtn">Dark mode</button><button id="logout">Sign out</button></div>
+  </nav>
+  <main>
+    <section id="t-overview">
+      <div class="head"><div><h2 id="greet">Hello</h2><p>Here's where things stand today.</p></div>
+        <div class="tools"><button class="btn" data-act="newP">Add patient</button><button class="btn ghost" data-act="newD">Add doctor</button></div></div>
+      <div class="stats" id="stats"></div>
+      <h3 class="sec">Waiting for a doctor</h3><div class="rows" id="waiting"></div>
+      <h3 class="sec">Recently added patients</h3><div class="rows" id="recent"></div>
+    </section>
+    <section id="t-patients" class="hidden">
+      <div class="head"><div><h2>Patients</h2><p>Click a patient to see details and manage their doctors. Press <kbd>/</kbd> to search.</p></div>
+        <div class="tools"><input id="qP" placeholder="Search name or phone" aria-label="Search patients">
+          <select id="sortP" aria-label="Sort"><option value="new">Newest first</option><option value="name">Name A-Z</option><option value="age">Age (oldest)</option></select>
+          <button class="btn" data-act="newP">Add patient</button></div></div>
+      <div class="chips" id="fP"></div><div class="rows" id="listP"></div>
+    </section>
+    <section id="t-doctors" class="hidden">
+      <div class="head"><div><h2>Doctors</h2><p>Everyone in the system. You can edit the ones you added.</p></div>
+        <div class="tools"><input id="qD" placeholder="Search name or specialty" aria-label="Search doctors"><button class="btn" data-act="newD">Add doctor</button></div></div>
+      <div class="chips" id="fD"></div><div class="rows" id="listD"></div>
+    </section>
+    <section id="t-mappings" class="hidden">
+      <div class="head"><div><h2>Assignments</h2><p>Link a patient to a doctor.</p></div></div>
+      <form class="assign" id="assignForm"><div><label for="mP">Patient</label><select id="mP"></select></div>
+        <div><label for="mD">Doctor</label><select id="mD"></select></div><button class="btn">Assign</button></form>
+      <div class="rows" id="listM"></div>
+    </section>
+  </main>
+</div>
+
+<div id="scrim" data-act="closeDrawer"></div>
+<aside id="drawer" aria-label="Patient details"></aside>
+
+<dialog id="pDlg"><form id="pForm" novalidate>
+  <h3 id="pTitle">Add patient</h3>
+  <label for="pName">Name</label><input id="pName" name="name">
+  <div class="two"><div><label for="pAge">Age</label><input id="pAge" name="age" type="number" min="0" max="120"></div>
+    <div><label for="pGender">Gender</label><select id="pGender" name="gender"><option value="F">Female</option><option value="M">Male</option><option value="O">Other</option></select></div></div>
+  <label for="pPhone">Phone</label><input id="pPhone" name="phone" inputmode="tel">
+  <label for="pAddr">Address</label><textarea id="pAddr" name="address"></textarea>
+  <label for="pHist">Medical history</label><textarea id="pHist" name="medical_history"></textarea>
+  <div class="gerr"></div>
+  <div class="dact"><button type="button" class="btn ghost" data-act="closeDlg" data-id="pDlg">Cancel</button><button class="btn">Save patient</button></div>
+</form></dialog>
+
+<dialog id="dDlg"><form id="dForm" novalidate>
+  <h3 id="dTitle">Add doctor</h3>
+  <label for="dName">Name</label><input id="dName" name="name">
+  <label for="dSpec">Specialization</label><input id="dSpec" name="specialization" list="specs" placeholder="Cardiology, ENT...">
+  <datalist id="specs"><option>Cardiology</option><option>Dermatology</option><option>ENT</option><option>General Physician</option><option>Neurology</option><option>Orthopedics</option><option>Pediatrics</option><option>Psychiatry</option></datalist>
+  <div class="two"><div><label for="dMail">Email</label><input id="dMail" name="email" type="email"></div>
+    <div><label for="dPhone">Phone</label><input id="dPhone" name="phone" inputmode="tel"></div></div>
+  <label for="dExp">Years of experience</label><input id="dExp" name="experience_years" type="number" min="0" max="70">
+  <div class="gerr"></div>
+  <div class="dact"><button type="button" class="btn ghost" data-act="closeDlg" data-id="dDlg">Cancel</button><button class="btn">Save doctor</button></div>
+</form></dialog>
+
+<dialog id="cDlg"><form method="dialog"><h3 id="cTitle">Are you sure?</h3><p class="meta" id="cMsg"></p>
+  <div class="dact"><button value="no" class="btn ghost">Keep it</button><button value="yes" class="btn solid-danger" id="cYes">Delete</button></div></form></dialog>
+
+<div id="toasts" aria-live="polite"></div>
+
+<script src="{% static 'js/utils.js' %}"></script>
+<script src="{% static 'js/api.js' %}"></script>
+<script src="{% static 'js/auth.js' %}"></script>
+<script src="{% static 'js/views.js' %}"></script>
+<script src="{% static 'js/drawer.js' %}"></script>
+<script src="{% static 'js/actions.js' %}"></script>
+<script src="{% static 'js/main.js' %}"></script>
+</body>
+</html>
