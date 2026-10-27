@@ -7,8 +7,8 @@ There's also a small web page at `/` so you can click through everything without
 ## Setup
 
 ```bash
-git clone <your-repo-url>
-cd healthcare
+git clone(https://github.com/Pragya-229/HealthCare)
+cd HealthCare
 python -m venv venv
 venv\Scripts\activate          # on Mac/Linux: source venv/bin/activate
 pip install -r requirements.txt
